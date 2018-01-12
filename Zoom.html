@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>放大镜</title>
+    <link rel="stylesheet" href="./jquery-gdsZoom/jquery.gdsZoom.css" />
+    <style>
+        .smallList img{width:80px;}
+    </style>
+</head>
+<body>
+    <div class="goods">
+        <img src="./image/imported_wines/1.jpg" data-big="./image/imported_wines/1.jpg">
+    </div>
+    <div class="smallList">
+        <img src="./image/beer/4.jpg">
+        <img src="./image/beer/5.jpg" alt="">
+        <img src="./image/beer/6.jpg" alt="">
+        <img src="./image/beer/7.jpg" alt="">
+<!--         <img src="./image/beer/8.jpg" alt=""> -->
+    </div>
+    <script src="./libs/jquery-3.2.1.min.js"></script>
+    <script src="./jquery-gdsZoom/jquery.gdsZoom.js"></script>
+    <script>
+        $(function(){
+            $('.goods').gdsZoom({
+                width:240,
+                height:240
+            });
+
+            $('.smallList img').click(function(){
+                $('.goods img').attr({
+                    'src':this.src,
+                    'data-big':$(this).attr('data-big') || this.src
+                });
+            })
+        });
+    </script>
+
+
+</body>
+</html>
