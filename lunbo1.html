@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>带有定时器的无缝轮播图</title>
+</head>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+    .box{
+        width: 500px;
+        height: 240px;
+        padding:5px;
+        border:1px solid #ccc;
+        margin: 200px auto;
+    }
+    .inner{
+        width: 240px;
+        height: 240px;
+        overflow: hidden;
+        position: relative;
+    }
+    ul {
+        width:3500px;
+        list-style: none;
+        position: absolute;
+        left:0;
+    }
+    ul li {
+        float: left;
+    }
+    .square{
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+    ol li {
+        display: inline-block;
+        list-style:  none;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        cursor: pointer;
+        background-color: #fff;
+        border:1px solid #ccc;
+        margin: 0 5px;
+    }
+    .arrow {
+        display: none;
+    }
+    .arrow .left {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        background-color: #ddd;
+        border:1px solid #fff;
+        line-height: 25px;
+        top:50%;
+        left: 0;
+        text-align: center;
+        cursor: pointer;
+    }
+    .arrow .right {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        background-color: #ddd;
+        border:1px solid #fff;
+        line-height: 25px;
+        top:50%;
+        right:0;
+        text-align: center;
+        cursor: pointer;
+    }
+    .current {
+        background-color: yellow;
+    }
+</style>
+<body>
+    <div class="box">
+        <div class="inner">
+            <ul>
+                <li><img src="./image/beer/3.jpg" alt=""></li>
+                <li><img src="./image/beer/1.jpg" alt=""></li>
+                <li><img src="./image/beer/5.jpg" alt=""></li>
+                <li><img src="./image/beer/7.jpg" alt=""></li>
+                <li><img src="./image/beer/8.jpg" alt=""></li>
+            </ul>
+            <!--指示器-->
+            <div class="square">
+                <ol></ol>
+            </div>
+            <!--箭头 -->
+            <div class="arrow">
+                <span class="left"><</span>
+                <span class="right">></span>
+            </div>
+        </div>
+    </div>
+    <script>
+        //1.获取事件源及相关元素
+        var box =  document.getElementsByClassName("box")[0];
+        var inner  = box.children[0];
+        var imgWidth = inner.offsetWidth;
+        console.log(imgWidth);
+        var ul = inner.children[0];
+        var ol = inner.children[1].children[0];
+        var arrow = inner.children[2];
+        var spanArr = arrow.children;
+        var liArr = inner.children[0].children;
+        //2.复制第一张图片所在的li,添加到ul的最后面。
+        var ulNewLi = ul.children[0].cloneNode(true);
+        ul.appendChild(ulNewLi);
+        //3.给ol中添加li，ul中的个数-1个，并点亮第一个按钮。因为复制了一个li
+        for(var i=0 ;i<liArr.length-1;i++){
+            var newLi = document.createElement("li");
+            newLi.innerHTML += i+1 ;
+            ol.appendChild(newLi);
+        }
+        var olLiArr = ol.children;
+        olLiArr[0].className = "current";
+        //4.鼠标放到ol的li上切换图片(排他思想)
+        for(var i=0 ;i<olLiArr.length;i++){
+            olLiArr[i].index = i;
+            olLiArr[i].onmouseover = function(){
+                for(var j=0;j<olLiArr.length;j++){
+                    olLiArr[j].className = "";
+                }
+                this.className = "current";
+                //鼠标放到小的方块上的时候索引值和key以及square同步
+//                    key = this.index;
+//                    square = this.index;
+                key = square = this.index;
+                //移动盒子
+                animate(ul,-this.index*imgWidth);
+            }
+        }
+        // 5.添加定时器
+        var timer = setInterval(autoPlay,1000);
+        // 固定向右切换图片
+        // 两个定时器（一个记录图片，一个记录小方块）
+        var key = 0 ;
+        var square = 0;
+        function autoPlay(){
+            key++;
+            if(key > olLiArr.length){
+                // 图片已经滑动到最后一张，接下来，跳转到第一张，然后滑动到第二张
+                ul.style.left  = 0 ;
+                key =1 ;
+            }
+            animate(ul,-key*imgWidth);
+            square++;
+            if(square>olLiArr.length-1){
+                square = 0;
+            }
+            for(var i = 0 ;i<olLiArr.length;i++){
+                olLiArr[i].className = "";
+            }
+            olLiArr[square].className = "current";
+        }
+        // 鼠标放上去清除定时器，一开后在开启定时器
+        box.onmouseover = function(){
+            arrow.style.display = "block";
+            clearInterval(timer);
+        };
+        box.onmouseout = function(){
+            arrow.style.display = "none";
+            timer = setInterval(autoPlay,1000);
+        };
+        // 6. 左右切换图片
+        spanArr[0].onclick = function () {
+            //通过控制key的自增来模拟图片的索引值，然后移动ul
+            key--;
+            if(key<0){
+                //先移动到最后一张，然后key的值取之前一张的索引值，然后在向前移动
+                ul.style.left = -imgWidth*(olLiArr.length)+"px";
+                key = olLiArr.length-1;
+            }
+            animate(ul,-key*imgWidth);
+            //通过控制square的自增来模拟小方块的索引值，然后点亮盒子
+            //排他思想做小方块
+            square--;
+            if(square<0){//索引值不能大于等于5，如果等于5，立刻变为0；
+                square = olLiArr.length-1;
+            }
+            for(var i=0;i<olLiArr.length;i++){
+                olLiArr[i].className = "";
+            }
+            olLiArr[square].className = "current";
+        }
+        spanArr[1].onclick = function () {
+            //右侧的和定时器一模一样
+            autoPlay();
+        }
+
+        // 封装匀速动画函数
+        function animate(ele,target){
+            clearInterval(ele.timer);
+            var speed = target>ele.offsetLeft?10:-10;
+            ele.timer = setInterval(function () {
+                var val = target - ele.offsetLeft;
+                ele.style.left = ele.offsetLeft + speed + "px";
+                if(Math.abs(val)<Math.abs(speed)){
+                    ele.style.left = target + "px";
+                    clearInterval(ele.timer);
+                }
+            },10)
+        }
+
+    </script>
+</body>
+</html>

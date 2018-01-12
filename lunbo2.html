@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>轮播图</title>
+   <!--  <link rel="stylesheet" href="./libs/jquery-fzwCarousel/jquery.fzwCarouselVertical.css" /> -->
+    <!-- <link rel="stylesheet" href="./libs/jquery-fzwCarousel/jquery.fzwCarouselFade.css" /> -->
+    <link rel="stylesheet" href="./jquery-lxCarousel/jquery.lxCarousel.css" />
+    
+</head>
+<body>
+    <div class="box"></div>
+    <script src="./libs/jquery-3.2.1.min.js"></script>
+    <script src="./jquery-lxCarousel/jquery.lxCarousel.js"></script>
+    <script>
+        jQuery(function($){
+            $('.box').lxCarousel({
+                imgs:['./image/1.jpg','./image/beer/2.jpg','./image/beer/3.jpg','./image/beer/4.jpg'],
+                width:'300',
+                height:'300',
+                //page:false,
+                type:'fade',
+                //type:'horizontal'
+                buttons:true
+                //type:'seamless'
+                //index:4
+
+            })
+        })
+
+
+
+
+
+
+    </script>
+    
+</body>
+</html>
